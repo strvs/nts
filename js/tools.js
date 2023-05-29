@@ -81,6 +81,18 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $('.tech-negative-faq-item-title').click(function() {
+        $(this).parent().toggleClass('open');
+    });
+
+    $('.tech-negative-video-player-link').click(function(e) {
+        var curPlayer = $(this).parent();
+        curPlayer.find('.tech-negative-video-player-iframe').html('<iframe width="560" height="315" src="' + $(this).attr('href') + '?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>');
+        $(this).hide();
+        curPlayer.find('.tech-negative-video-player-iframe').show();
+        e.preventDefault();
+    });
+
 });
 
 function initForm(curForm) {
@@ -105,6 +117,9 @@ $(window).on('load resize', function() {
     $('.main-new-tech').each(function() {
         $('.main-new-tech').css({'height': $('.main-new-tech-inner').outerHeight()});
     });
+    $('.about-partner-photo').each(function() {
+        $('.about-partner-photo').css({'height': $('.about-partner-photo-inner').outerHeight()});
+    });
 });
 
 $(window).on('load resize scroll', function() {
@@ -123,6 +138,21 @@ $(window).on('load resize scroll', function() {
             $('.main-new-tech-inner').css({'top': 'auto'});
         }
     }
+
+    $('.about-partner-photo').each(function() {
+        if (windowScroll > $('.about-partner-photo').offset().top) {
+            $('.about-partner-photo').addClass('fixed');
+            if (windowScroll + $('.about-partner-photo-inner').outerHeight() > $('.about-partner-container').offset().top + $('.about-partner-container').outerHeight()) {
+                $('.about-partner-photo-inner').css({'margin-top': -((windowScroll + $('.about-partner-photo-inner').outerHeight()) - ($('.about-partner-container').offset().top + $('.about-partner-container').outerHeight())) + 'px'});
+            } else {
+                $('.about-partner-photo-inner').css({'margin-top': 0});
+            }
+        } else {
+            $('.about-partner-photo').removeClass('fixed');
+            $('.about-partner-photo-inner').css({'margin-top': 0});
+        }
+    });
+
 });
 
 function windowOpen(linkWindow, dataWindow) {
