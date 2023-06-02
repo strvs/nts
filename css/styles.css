@@ -458,7 +458,7 @@ label.error {display:none !important}
     .main-articles-other {margin:80px 0 0 0}
 }
 
-.feedback {background:url(../images/feedback.jpg) no-repeat center; background-size:cover; position:relative; overflow:hidden}
+.feedback {background:url(../images/feedback.jpg) no-repeat center top; background-size:cover; position:relative; overflow:hidden}
 .feedback-container {display:table; width:100%}
 .feedback-form {display:table-cell; vertical-align:middle; padding:176px 0; position:relative}
 .feedback-form::before {content:""; display:block; position:absolute; left:-96px; top:0; width:156px; height:850px; background:url(../images/feedback-line.svg)}
@@ -473,6 +473,7 @@ label.error {display:none !important}
 .feedback-persone-info-post {margin:4px 0 0 0; font-size:14px; line-height:17px}
 
 @media (max-width:1209px) {
+    .feedback {background-image:url(../images/feedback-mobile.jpg)}
     .feedback-container {display:block; width:auto; padding:0 0 80px 0}
     .feedback-form {display:block; padding:80px 0 0 0}
     .feedback-form::before {left:20px; width:85px; height:561px; background:url(../images/feedback-line-mobile.svg)}
