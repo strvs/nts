@@ -54,6 +54,7 @@ ol ol li::before {content:counter(point)'.'counter(subpoint); counter-increment:
 .btn {display:inline-block; margin:0; padding:20px; overflow:visible; outline:none; vertical-align:top; text-decoration:none; background:linear-gradient(360deg, #0040BC 0%, #0047FF 100%); box-shadow:0px 2px 0px #0E318B; border-radius:6px; color:#FFFFFF; border:none; font:500 16px/19px GothamPro, sans-serif; letter-spacing:-0.04em; text-align:center; position:relative; -webkit-appearance:none; cursor:pointer; text-transform:uppercase; transition:background 0.2s, box-shadow 0.2s, transform 0.2s}
 .btn:hover {background:linear-gradient(360deg, #004DE4 0%, #3B72FF 100%); color:#FFFFFF}
 .btn:active {background:linear-gradient(360deg, #0047FF 0%, #0045EA 0.01%, #0040BC 100%); box-shadow:none; color:#FFFFFF; transform:translateY(2px)}
+.btn:disabled {cursor:default; pointer-events:none; background:linear-gradient(360deg, #B6BBC6 0%, #F0F4FF 100%); box-shadow:0px 2px 0px #929BAA; color:#8B92A1}
 
 @media (max-width:1209px) {
     .btn {font-size:14px; line-height:17px; padding:17px}
@@ -66,6 +67,9 @@ ol ol li::before {content:counter(point)'.'counter(subpoint); counter-increment:
 .btn-border {display:inline-block; margin:0; padding:18px; overflow:visible; outline:none; vertical-align:top; text-decoration:none; background:transparent; border-radius:6px; color:#262626; border:2px solid #0047FF; font:bold 14px/17px GothamPro, sans-serif; letter-spacing:0; text-align:center; position:relative; -webkit-appearance:none; cursor:pointer; text-transform:uppercase; transition:background 0.2s, color 0.2s}
 .btn-border:hover {border-color:transparent; background:linear-gradient(360deg, #004DE4 0%, #3B72FF 100%); color:#FFFFFF}
 .btn-border:active {border-color:transparent; background:linear-gradient(0deg, #0040BC, #0040BC); color:#FFFFFF}
+
+form.loading {position:relative}
+form.loading::after {content:""; display:block; position:absolute; left:0; top:0; right:0; bottom:0; background:rgba(255, 255, 255, 0.5) url(../images/loading.svg) no-repeat center; background-size:24px 24px}
 
 .form-input {position:relative; margin:20px 0 0 0}
 .form-input input,
@@ -104,6 +108,14 @@ label.error {display:none !important}
 @media (max-width:1209px) {
     .form-checkbox {font-size:9px; line-height:13px}
 }
+
+.form-file {position:relative; margin:30px 0 0 0}
+.form-file-input {display:block; position:relative; color:#15429B; overflow:hidden; background:#EFF3F8; height:60px; text-align:center; font-weight:500; font-size:16px; line-height:60px; letter-spacing:0; cursor:pointer; transition:background 0.2s, color 0.2s}
+.form-file-input:hover {background:#448FFF; color:#FFFFFF}
+.form-file-input input {height:200px; position:absolute; z-index:1; top:0; right:0; opacity:0; cursor:pointer; font-size:200px; background:url(../images/blank.gif); -webkit-appearance:none}
+.form-file-input strong {font-weight:500}
+.form-file-input svg {display:inline-block; vertical-align:middle; width:40px; height:40px; margin:-2px 10px 0 0; fill:#15429B; transition:fill 0.2s}
+.form-file-input:hover svg {fill:#FFFFFF}
 
 .form-submit {margin:30px 0 0 0}
 .form-submit .btn {display:block; width:100%; padding:20px 0}
@@ -607,6 +619,7 @@ label.error {display:none !important}
 .project-gallery::after {content:""; display:block; clear:both}
 .project-gallery-item {float:left; width:240px; height:170px; margin:10px 5px 0 5px; position:relative; border-radius:10px; overflow:hidden}
 .project-gallery-item:first-child {width:670px; height:530px}
+.project-gallery-item:nth-child(n+8) {display:none}
 .project-gallery-item-preview {position:absolute; left:0; top:0; right:0; bottom:0; border-radius:10px; background:no-repeat center; background-size:cover}
 .project-gallery-item-preview::before {content:""; position:absolute; left:0; top:0; right:0; bottom:0; background:#0047FF; opacity:0; border-radius:10px; transition:opacity 0.2s}
 .project-gallery-item:hover .project-gallery-item-preview::before {opacity:0.4}
@@ -862,6 +875,8 @@ label.error {display:none !important}
 .about-block-video a:hover .about-block-video-icon svg {fill:#2079FF}
 .about-block-video-title {margin:19px 0 0 0}
 .about-block-link {float:left; clear:left; width:700px; margin:36px 0 0 0; position:relative}
+.about-block-video-player-iframe {display:none; position:absolute; left:0; top:0; right:0; bottom:0; background:linear-gradient(270deg, #2453CE 0%, #11348F 100%)}
+.about-block-video-player-iframe iframe {position:absolute; left:0; top:0; width:100%; height:100%}
 
 @media (max-width:1209px) {
     .about-block {margin:80px 0 0 0; padding:80px 0; text-align:center}
@@ -1731,4 +1746,114 @@ label.error {display:none !important}
 
 @media (max-width:1209px) {
     .window-success {width:300px; padding:30px 20px}
+}
+
+.window-download {width:480px; padding:40px}
+.window-download-title {font-weight:500; font-size:30px; line-height:36px; text-align:center}
+.window-download-step1 {margin:20px 0 0 0}
+.window-download-step-title {position:relative; padding:0 0 0 32px; font-size:15px; line-height:18px}
+.window-download-step-title span {position:absolute; left:0; top:-3px; width:22px; height:22px; font-weight:bold; line-height:22px; text-align:center; color:#FFFFFF; background:linear-gradient(360deg, #0040BC 0%, #0047FF 100%); border-radius:2px}
+.window-download-step-form {margin:17px 0 0 0}
+.window-download-step-form form {margin:0; padding:0; display:flex}
+.window-download-step1 form.disabled {opacity:0.5; pointer-events:none}
+.window-download-step-form .form-input {width:100%; margin:0 20px 0 0}
+.window-download-step-form .form-submit {min-width:140px; max-width:140px; margin:0}
+.window-download-step-form .form-submit .btn {width:100%; padding:14px 0; font-size:15px; line-height:18px; font-weight:bold}
+.window-download-sms-notice {margin:20px 0 0 0; font-size:15px; line-height:18px; color:#202327}
+.window-download-policy {margin:20px 0 0 0; border:1px solid #0047FF; border-radius:10px; padding:15px; background:#EFF3FF; font-size:13px; line-height:18px; color:#202327; text-align:center}
+.window-download-resend-text {display:none; margin:20px 0 0 0; font-size:15px; line-height:18px202327}
+.window-download-resend-text a.disabled {pointer-events:none; opacity:0.5}
+.window-download-resend-text span {font-weight:bold}
+.window-download-step2 {display:none; margin:24px 0 0 0}
+
+@media (max-width:1209px) {
+    .window-download {width:300px; padding:30px 20px}
+    .window-download-title {font-size:24px; line-height:29px}
+    .window-download-step-form form {display:block}
+    .window-download-step-form .form-input {margin:0}
+    .window-download-step-form .form-submit {margin:20px 0 0 0; min-width:0; max-width:none}
+}
+
+.window-resume {width:520px}
+.window-resume-content {padding:60px}
+.window-resume .feedback-form-title {font-size:30px; line-height:36px}
+
+@media (max-width:1209px) {
+    .window-resume {width:300px; display:block}
+    .window-resume-content {min-width:0; max-width:none; padding:30px 20px}
+    .window-resume .feedback-form-title {font-size:24px; line-height:29px}
+}
+
+.window-compare {width:1200px; padding:60px 30px}
+.window-compare-title {font-weight:500; font-size:40px; line-height:48px; text-align:center; color:#2D3136}
+
+@media (max-width:1209px) {
+    .window-compare {width:300px; padding:30px 20px}
+    .window-compare-title {font-size:24px; line-height:29px}
+}
+
+.window-photo-open,
+.window-photo-open body {overflow:hidden; position:fixed; left:0; top:0; right:0; bottom:0}
+
+.window-photo {position:fixed; display:flex; align-items:center; justify-content:center; left:0; top:0; right:0; bottom:0; z-index:9999; background:rgba(38, 38, 38, 0.7); backdrop-filter:blur(10px)}
+
+.window-photo-preview {display:flex; height:100%; min-width:200px; max-width:200px; margin:0 30px 0 0; padding:80px 0}
+.window-photo-preview-inner {display:flex; height:100%; width:100%}
+.window-photo-preview-list {width:100%; height:100%; position:relative; overflow:hidden; font-size:0; line-height:0}
+.window-photo-preview-list-item {padding:0 0 16px 0}
+.window-photo-preview-list-item a {display:block; height:130px; position:relative; background:no-repeat center; background-size:cover; border-radius:10px}
+.window-photo-preview-list-item a::before {content:""; position:absolute; left:0; top:0; right:0; bottom:0; background:rgba(0, 71, 255, 0.4); border-radius:10px; opacity:0; transition:opacity 0.2s}
+.window-photo-preview-list-item a:hover::before {opacity:1}
+.window-photo-preview-list-item a::after {content:""; position:absolute; left:0; top:0; right:0; bottom:0; border:4px solid #0047FF; border-radius:10px; opacity:0; transition:opacity 0.2s}
+.window-photo-preview-list-item.active a::after {opacity:1}
+.window-photo-preview-list-item a svg {position:absolute; left:50%; top:50%; width:49px; height:49px; transform:translate(-50%, -50%); fill:#FFFFFF; opacity:0; transition:opacity 0.2s}
+.window-photo-preview-list-item a:hover svg {opacity:1}
+.window-photo-preview-list-item-360 a svg {width:50px; height:50px; fill:#0047FF; opacity:1}
+.window-photo-preview-list .slick-prev,
+.window-photo-preview-list .slick-next {display:block; position:relative; width:100%; height:19px; border:none; border-radius:0; margin:0; padding:0; font-size:0; line-height:0; outline:none; -webkit-appearance:none; cursor:pointer; background:transparent}
+.window-photo-preview-list .slick-prev {margin:0 0 30px 0}
+.window-photo-preview-list .slick-next {margin:14px 0 0 0}
+.window-photo-preview-list .slick-prev svg {display:block; margin:0 auto; width:32px; height:19px; fill:#B2B8C0; transition:fill 0.2s}
+.window-photo-preview-list .slick-next svg {display:block; margin:0 auto; width:32px; height:19px; fill:#B2B8C0; transition:fill 0.2s}
+.window-photo-preview-list .slick-prev:hover svg {fill:#0047FF}
+.window-photo-preview-list .slick-next:hover svg {fill:#0047FF}
+
+@media (max-width:1279px) {
+    .window-photo-preview {display:none}
+}
+
+.window-photo-close {display:block; position:absolute; right:60px; top:60px; z-index:20}
+.window-photo-close svg {display:block; fill:#FFFFFF; transition:fill 0.2s; width:44px; height:44px}
+.window-photo-close:hover svg {fill:#448FFF}
+
+@media (max-width:1279px) {
+    .window-photo-close {right:10px; top:10px}
+    .window-photo-close svg {width:22px; height:22px}
+}
+
+.window-photo-slider {min-width:1300px; max-width:1300px; display:flex; height:100%; font-size:0; line-height:0; letter-spacing:-1px; white-space:nowrap}
+.window-photo-slider-list {display:flex; height:100%; min-width:100%; max-width:100%; position:relative; overflow:hidden}
+.window-photo-slider-list-item {display:flex !important; min-width:100%; max-width:100%}
+.window-photo-slider-list-item-inner {display:flex; width:100%; flex-direction:column; min-height:100vh; max-height:100vh; padding:80px 0}
+.window-photo-slider-list-item-title {font-weight:bold; font-size:26px; line-height:31px; color:#FFFFFF; margin:0 0 40px 0; white-space:normal; letter-spacing:0}
+.window-photo-slider-list-item-text {font-size:16px; line-height:20px; color:#FFFFFF; margin:-30px 0 40px 0; white-space:normal; letter-spacing:0}
+.window-photo-slider-list-item-img {display:flex; height:100%; max-height:100%; align-items:center; justify-content:center; position:relative; overflow:hidden}
+.window-photo-slider .slick-slide .window-photo-slider-list-item-img img,
+.window-photo-slider-list-item-img img {display:block; max-height:100%; max-width:100%; border-radius:10px}
+.window-photo-slider-list-item-view360 {display:flex; height:100%; max-height:100%; align-items:center; justify-content:center; position:relative; overflow:hidden}
+.window-photo-slider-list-item-view360 img {display:block; max-height:100%; max-width:100%; border-radius:10px}
+.window-photo-slider-list-item-view360-ctrl {position:absolute; left:50%; width:660px; margin-left:-330px; bottom:35px; height:50px}
+.window-photo-slider-list-item-view360-ctrl svg {display:block; position:absolute; left:0; top:0; width:50px; height:50px; fill:#FFFFFF}
+.window-photo-slider-list-item-view360-ctrl-line {position:absolute; left:69px; top:50%; right:0; height:2px; margin-top:-1px; background:#F4F6F8}
+.window-photo-slider-list-item-view360-ctrl-drag {position:absolute; left:0; top:50%; transform:translate(-50%, -50%); width:20px; height:20px; background:#FFFFFF; border-radius:50%; cursor:pointer}
+
+@media (max-width:1530px) {
+    .window-photo-slider {min-width:1000px; max-width:1000px}
+    .window-photo-slider-list-item-inner {padding:40px 20px}
+}
+
+@media (max-width:1279px) {
+    .window-photo-slider {min-width:100%; max-width:100%}
+    .window-photo-slider-list-item-title {font-size:20px; line-height:30px; margin:0 0 20px 0}
+    .window-photo-slider-list-item-text {font-size:14px; line-height:20px; margin:-10px 0 20px 0}
 }

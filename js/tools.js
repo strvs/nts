@@ -7,6 +7,17 @@ $(document).ready(function() {
         'Ошибка заполнения'
     );
 
+    $('body').on('change', '.form-file input', function() {
+        var curInput = $(this);
+        var curField = curInput.parents().filter('.form-file');
+        var curName = curInput.val().replace(/.*(\/|\\)/, '');
+        if (curName != '') {
+            curField.find('.form-file-input strong').html(curName);
+        } else {
+            curField.find('.form-file-input strong').html(curField.find('.form-file-input').attr('data-placeholder'));
+        }
+    });
+
     $('form').each(function() {
         initForm($(this));
     });
@@ -93,6 +104,187 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $('.project-gallery').each(function() {
+        var curGallery = $(this);
+        var countItems = curGallery.find('.project-gallery-item').length;
+        if (countItems > 7) {
+            curGallery.find('.project-gallery-item').eq(6).append('<div class="project-gallery-item-more"><span>+' + (countItems - 7) + '</span></div>')
+        }
+    });
+
+    $('body').on('click', '[data-lightbox]', function(e) {
+        var curItem = $(this);
+        var curGroup = curItem.attr('data-lightbox');
+        if (curGroup == '') {
+            var curGallery = curItem;
+        } else {
+            var curGallery = $('[data-lightbox="' + curGroup + '"]');
+        }
+        var curIndex = curGallery.index(curItem);
+
+        var curWidth = $(window).width();
+
+        var curPadding = $('.wrapper').width();
+        var curScroll = $(window).scrollTop();
+        $('html').addClass('window-photo-open');
+        curPadding = $('.wrapper').width() - curPadding;
+        $('body').css({'margin-right': curPadding + 'px'});
+
+        var windowHTML =    '<div class="window-photo">';
+
+        var galleryLength = curGallery.length;
+        if (galleryLength > 1) {
+            windowHTML +=       '<div class="window-photo-preview">' +
+                                    '<div class="window-photo-preview-inner">' +
+                                        '<div class="window-photo-preview-list">';
+
+            for (var i = 0; i < galleryLength; i++) {
+                var curGalleryItem = curGallery.eq(i);
+                var curIMG = '';
+                if (curGalleryItem.find('img').length > 0) {
+                    curIMG = curGalleryItem.find('img').eq(0).attr('src');
+                } else if (curGalleryItem.find('[style*="background-image"]').length > 0) {
+                    curIMG = curGalleryItem.find('[style*="background-image"]').eq(0).css('background-image').replace('url(','').replace(')','').replace(/\"/gi, "");;
+                } else {
+                    curIMG = curGalleryItem.attr('href');
+                }
+                if (typeof(curGalleryItem.attr('data-view360')) != 'undefined') {
+                    windowHTML +=           '<div class="window-photo-preview-list-item window-photo-preview-list-item-360"><a href="#" style="background-image:url(' + curIMG + ')"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#multi-panels-item-360"></use></svg></a></div>';
+                } else {
+                    windowHTML +=           '<div class="window-photo-preview-list-item"><a href="#" style="background-image:url(' + curIMG + ')"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#zoom"></use></svg></a></div>';
+                }
+            }
+            windowHTML +=               '</div>' +
+                                    '</div>' +
+                                '</div>';
+        }
+
+        windowHTML +=           '<a href="#" class="window-photo-close"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#window-photo-close"></use></svg></a>';
+
+        windowHTML +=           '<div class="window-photo-slider">' +
+                                    '<div class="window-photo-slider-list">';
+
+        for (var i = 0; i < galleryLength; i++) {
+            var curGalleryItem = curGallery.eq(i);
+            windowHTML +=               '<div class="window-photo-slider-list-item">' +
+                                            '<div class="window-photo-slider-list-item-inner">';
+            if (typeof(curGalleryItem.attr('data-title')) != 'undefined') {
+                windowHTML +=                   '<div class="window-photo-slider-list-item-title">' + curGalleryItem.attr('data-title') + '</div>';
+            }
+            if (typeof(curGalleryItem.attr('data-text')) != 'undefined') {
+                windowHTML +=                   '<div class="window-photo-slider-list-item-text">' + curGalleryItem.attr('data-text') + '</div>';
+            }
+            if (typeof(curGalleryItem.attr('data-view360')) != 'undefined') {
+                windowHTML +=                   '<div class="window-photo-slider-list-item-view360" data-folder="' + curGalleryItem.attr('data-view360-folder') +'" data-filename-x="' + curGalleryItem.attr('data-view360-filename-x') +'" data-amount-x="' + curGalleryItem.attr('data-view360-amount-x') +'"></div>';
+            } else {
+                windowHTML +=                   '<div class="window-photo-slider-list-item-img"><img alt="" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgc3R5bGU9Im1hcmdpbjogYXV0bzsgYmFja2dyb3VuZDogbm9uZTsgZGlzcGxheTogYmxvY2s7IHNoYXBlLXJlbmRlcmluZzogYXV0bzsgYW5pbWF0aW9uLXBsYXktc3RhdGU6IHJ1bm5pbmc7IGFuaW1hdGlvbi1kZWxheTogMHM7IiB3aWR0aD0iOTFweCIgaGVpZ2h0PSI5MXB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQiPg0KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA0N0ZGIiBzdHJva2Utd2lkdGg9IjEwIiByPSIzNSIgc3Ryb2tlLWRhc2hhcnJheT0iMTY0LjkzMzYxNDMxMzQ2NDE1IDU2Ljk3Nzg3MTQzNzgyMTM4IiBzdHlsZT0iYW5pbWF0aW9uLXBsYXktc3RhdGU6IHJ1bm5pbmc7IGFuaW1hdGlvbi1kZWxheTogMHM7Ij4NCiAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiBkdXI9IjFzIiB2YWx1ZXM9IjAgNTAgNTA7MzYwIDUwIDUwIiBrZXlUaW1lcz0iMDsxIiBzdHlsZT0iYW5pbWF0aW9uLXBsYXktc3RhdGU6IHJ1bm5pbmc7IGFuaW1hdGlvbi1kZWxheTogMHM7Ij48L2FuaW1hdGVUcmFuc2Zvcm0+DQo8L2NpcmNsZT4NCjwhLS0gW2xkaW9dIGdlbmVyYXRlZCBieSBodHRwczovL2xvYWRpbmcuaW8vIC0tPjwvc3ZnPg==" data-src="' + curGalleryItem.attr('href') + '"></div>';
+            }
+
+            windowHTML +=                   '</div>' +
+                                        '</div>';
+        }
+        windowHTML +=               '</div>' +
+                                '</div>';
+
+        windowHTML +=       '</div>';
+
+        $('.window-photo').remove();
+        $('body').append(windowHTML);
+
+        $('.wrapper').css({'top': -curScroll});
+        $('.wrapper').data('curScroll', curScroll);
+
+        $('.window-photo-preview-list-item').eq(curIndex).addClass('active');
+
+        $('.window-photo-slider-list').slick({
+            infinite: false,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: false,
+            dots: false,
+            speed: 250,
+            initialSlide: curIndex,
+            asNavFor: '.window-photo-preview-list'
+        }).on('setPosition', function(event, slick) {
+            var currentSlide = $('.window-photo-slider-list').slick('slickCurrentSlide');
+            $('.window-photo-preview-list-item.active').removeClass('active');
+            $('.window-photo-preview-list-item').eq(currentSlide).addClass('active');
+            if ($('.window-photo-slider-list-item').eq(currentSlide).find('.window-photo-slider-list-item-view360').length == 1) {
+                var cur360 = $('.window-photo-slider-list-item').eq(currentSlide).find('.window-photo-slider-list-item-view360');
+                console.log(cur360.attr('data-filename-x'));
+                cur360.html('<img src="' + (cur360.attr('data-folder') + cur360.attr('data-filename-x').replace('{index}', '1')) + '" alt="">');
+                cur360.append('<div class="window-photo-slider-list-item-view360-ctrl"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#multi-panels-item-360"></use></svg><div class="window-photo-slider-list-item-view360-ctrl-line"><div class="window-photo-slider-list-item-view360-ctrl-drag"></div></div></div>');
+            } else {
+                var curIMG = $('.window-photo-slider-list-item').eq(currentSlide).find('img');
+                if (curIMG.attr('src') !== curIMG.attr('data-src')) {
+                    var newIMG = $('<img src="" alt="" style="position:fixed; left:-9999px; top:-9999px" />');
+                    $('body').append(newIMG);
+                    newIMG.one('load', function(e) {
+                        curIMG.attr('src', curIMG.attr('data-src'));
+                        newIMG.remove();
+                    });
+                    newIMG.attr('src', curIMG.attr('data-src'));
+                    window.setTimeout(function() {
+                        curIMG.attr('src', curIMG.attr('data-src'));
+                        if (newIMG) {
+                            newIMG.remove();
+                        }
+                    }, 3000);
+                }
+            }
+        });
+
+        if (galleryLength > 1) {
+            $('body').append('<div id="body-test-height" style="position:fixed; left:0; top:0; right:0; bottom:0; z-index:-1"></div>');
+            var windowHeight = $('#body-test-height').height();
+            $('#body-test-height').remove();
+            var previewCount = Math.floor((windowHeight - 258) / 146);
+
+            $('.window-photo-preview-list').slick({
+                infinite: false,
+                slidesToShow: previewCount,
+                slidesToScroll: 1,
+                initialSlide: curIndex,
+                prevArrow: '<button type="button" class="slick-prev"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#window-preview-prev"></use></svg>Листай</button>',
+                nextArrow: '<button type="button" class="slick-next">Листай<svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#window-preview-next"></use></svg></button>',
+                vertical: true,
+                asNavFor: '.window-photo-slider-list'
+            });
+        }
+
+        e.preventDefault();
+    });
+
+    $('body').on('click', '.window-photo-preview-list-item a', function(e) {
+        var curIndex = $('.window-photo-preview-list-item').index($(this).parent());
+        $('.window-photo-slider-list').slick('slickGoTo', curIndex);
+        e.preventDefault();
+    });
+
+    $('body').on('click', '.window-photo-close', function(e) {
+        $('.window-photo').remove();
+        $('html').removeClass('window-photo-open');
+        $('body').css({'margin-right': 0});
+        $('.wrapper').css({'top': 0});
+        $(window).scrollTop($('.wrapper').data('curScroll'));
+        e.preventDefault();
+    });
+
+    $('body').on('keyup', function(e) {
+        if (e.keyCode == 27) {
+            if ($('.window-photo').length > 0) {
+                $('.window-photo-close').trigger('click');
+            }
+        }
+    });
+
+    $('.about-block-video-player-link').click(function(e) {
+        var curPlayer = $('.about-block');
+        curPlayer.find('.about-block-video-player-iframe').html('<iframe width="560" height="315" src="' + $(this).attr('href') + '?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>');
+        curPlayer.find('.about-block-video-player-iframe').show();
+        e.preventDefault();
+    });
+
 });
 
 function initForm(curForm) {
@@ -153,7 +345,64 @@ $(window).on('load resize scroll', function() {
         }
     });
 
+    $('body').on('click', '.window-download-resend-text a', function(e) {
+        var curLink = $(this);
+        if (!curLink.hasClass('disabled')) {
+            curLink.addClass('disabled');
+            $('.window .window-download-step1 form').each(function() {
+                var curForm = $(this);
+                var formData = new FormData(curForm[0]);
+                $.ajax({
+                    type: 'POST',
+                    url: curForm.attr('action'),
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    dataType: 'json',
+                    cache: false,
+                    timeout: 30000
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    curLink.removeClass('disabled');
+                    alert('Сервис временно недоступен, попробуйте позже.');
+                }).done(function(data) {
+                    if (data.status) {
+                        reSMSperiod = data.timer + 1;
+                        window.clearTimeout(reSMSTimer);
+                        reSMSTimer = null;
+                        updateTimerSMS();
+                        $('.window-download-resend-text a').addClass('disabled');
+                    } else {
+                        curLink.removeClass('disabled');
+                        alert(data.error);
+                    }
+                });
+            });
+        }
+        e.preventDefault();
+    });
+
 });
+
+var reSMSperiod = 120;
+var reSMSTimer = null;
+
+function updateTimerSMS() {
+    reSMSperiod--;
+    var newText = '';
+    if (reSMSperiod > 60) {
+        var countMinutes = Math.floor(reSMSperiod / 60);
+        newText = ('0' + String(countMinutes)).substr(-2) + ':' + ('0' + String(reSMSperiod - countMinutes * 60)).substr(-2);
+    } else {
+        newText = '00:' + ('0' + String(reSMSperiod)).substr(-2);
+    }
+    $('.window-download-resend-text span').html(newText);
+    if (reSMSperiod <= 0) {
+        $('.window-download-resend-text a').removeClass('disabled');
+    } else {
+        reSMSTimer = window.setTimeout(updateTimerSMS, 1000);
+    }
+}
+
 
 function windowOpen(linkWindow, dataWindow) {
     if ($('.window').length == 0) {
@@ -190,6 +439,103 @@ function windowOpen(linkWindow, dataWindow) {
 
         $('.window form').each(function() {
             initForm($(this));
+        });
+
+        $('.window .window-download-step1 form').each(function() {
+            var curForm = $(this);
+            var validator = curForm.validate();
+            if (validator) {
+                validator.destroy();
+            }
+            curForm.find('.form-input input').attr('autocomplete', 'off');
+            curForm.validate({
+                ignore: '',
+                submitHandler: function(form) {
+                    if (!curForm.hasClass('disabled')) {
+                        var formData = new FormData(form);
+                        curForm.addClass('loading');
+                        $.ajax({
+                            type: 'POST',
+                            url: curForm.attr('action'),
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            dataType: 'json',
+                            cache: false,
+                            timeout: 30000
+                        }).fail(function(jqXHR, textStatus, errorThrown) {
+                            curForm.removeClass('loading');
+                            alert('Сервис временно недоступен, попробуйте позже.');
+                        }).done(function(data) {
+                            curForm.removeClass('loading');
+                            curForm.addClass('disabled');
+                            if (data.status) {
+                                reSMSperiod = data.timer + 1;
+                                window.clearTimeout(reSMSTimer);
+                                reSMSTimer = null;
+                                updateTimerSMS();
+                                $('.window-download-resend-text').show();
+                                $('.window-download-resend-text a').addClass('disabled');
+                                $('.window-download-step2').show();
+                            } else {
+                                alert(data.error);
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        $('.window .window-download-step2 form').each(function() {
+            var curForm = $(this);
+            var validator = curForm.validate();
+            if (validator) {
+                validator.destroy();
+            }
+            curForm.find('.form-input input').attr('autocomplete', 'off');
+            curForm.validate({
+                ignore: '',
+                submitHandler: function(form) {
+                    if (!curForm.hasClass('disabled')) {
+                        var formData = new FormData(form);
+                        curForm.addClass('loading');
+                        $.ajax({
+                            type: 'POST',
+                            url: curForm.attr('action'),
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            dataType: 'json',
+                            cache: false,
+                            timeout: 30000
+                        }).fail(function(jqXHR, textStatus, errorThrown) {
+                            curForm.removeClass('loading');
+                            alert('Сервис временно недоступен, попробуйте позже.');
+                        }).done(function(data) {
+                            curForm.removeClass('loading');
+                            if (data.status) {
+                                var params = data;
+                                $.ajax({
+                                    url: params.link,
+                                    dataType: 'binary',
+                                    xhrFields: {
+                                        'responseType': 'blob'
+                                    },
+                                    success: function(data, status, xhr) {
+                                        var blob = new Blob([data], {type: xhr.getResponseHeader('Content-Type')});
+                                        var link = document.createElement('a');
+                                        link.href = window.URL.createObjectURL(blob);
+                                        link.download = params.title;
+                                        link.click();
+                                    }
+                                });
+                            } else {
+                                alert(data.error);
+                            }
+                        });
+                    }
+                }
+            });
         });
 
         $(window).trigger('resize');

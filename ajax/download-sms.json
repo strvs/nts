@@ -1,0 +1,5 @@
+{
+    "status"        : true,
+    "timer"         : 120,
+    "errorMessage"  : "Сообщение в случае ошибки"
+}

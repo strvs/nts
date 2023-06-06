@@ -1,0 +1,24 @@
+<div class="window-download">
+    <div class="window-download-title">Скачать каталог</div>
+    <div class="window-download-step1">
+        <div class="window-download-step-title"><span>1</span>Введите номер Вашего телефона:</div>
+        <div class="window-download-step-form">
+            <form action="ajax/download-sms.json" method="post">
+                <div class="form-input"><input type="text" name="phone" value="" placeholder="+7 (___)-___-__-__" class="required phoneRU"></div>
+                <div class="form-submit"><button type="submit" class="btn">Отправить</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="window-download-sms-notice">В&nbsp;течении 15&nbsp;секунд мы&nbsp;пришлем на&nbsp;него бесплатное SMS с&nbsp;кодом, чтобы убедиться, что Вы&nbsp;&mdash; реальный человек</div>
+    <div class="window-download-policy">Мы&nbsp;не&nbsp;передаем Ваш номер третьим лицам и&nbsp;не&nbsp;используем его для рассылки рекламы.</div>
+    <div class="window-download-resend-text"><a href="#">Отправить код повторно</a> можно через: <span>01:59</span></div>
+    <div class="window-download-step2">
+        <div class="window-download-step-title"><span>2</span>Введите код из&nbsp;SMS<br> и&nbsp;нажмите кнопку &laquo;Скачать&raquo;</div>
+        <div class="window-download-step-form">
+            <form action="ajax/download-code.json" method="post">
+                <div class="form-input"><input type="text" name="code" value="" placeholder="Введите код" class="required"></div>
+                <div class="form-submit"><button type="submit" class="btn">Скачать</button></div>
+            </form>
+        </div>
+    </div>
+</div>

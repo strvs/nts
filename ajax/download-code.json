@@ -1,0 +1,6 @@
+{
+    "status"        : true,
+    "link"          : "files/catalogue.pdf",
+    "title"         : "Каталог.pdf",
+    "errorMessage"  : "Сообщение в случае ошибки"
+}
