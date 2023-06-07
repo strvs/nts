@@ -120,4 +120,8 @@
         <path fill-rule="evenodd" clip-rule="evenodd" d="M16 19L32 3.96504L28.5128 0L16 11.7581L3.48723 0L0 3.96504L16 19Z" />
     </symbol>
 
+    <symbol viewBox="0 0 11 11" id="about-partner-descr-more">
+        <path d="M1 5L5.5 9L10 5" stroke-width="2" />
+    </symbol>
+
 </svg>
