@@ -27,6 +27,14 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $('body').on('click', '.window-link-html', function(e) {
+        var curBlock = $($(this).attr('href'));
+        if (curBlock.length == 1) {
+            windowOpenHTML(curBlock.html());
+        }
+        e.preventDefault();
+    });
+
     $('body').on('keyup', function(e) {
         if (e.keyCode == 27) {
             windowClose();
@@ -345,21 +353,23 @@ $(document).ready(function() {
 });
 
 function initForm(curForm) {
-    curForm.find('input.phoneRU').mask('+7 (000)-000-00-00');
+    if (curForm.parents().filter('.window-template').length == 0) {
+        curForm.find('input.phoneRU').mask('+7 (000)-000-00-00');
 
-    curForm.validate({
-        ignore: '',
-        submitHandler: function(form) {
-            var curForm = $(form);
-            if (curForm.hasClass('window-form')) {
-                var formData = new FormData(form);
+        curForm.validate({
+            ignore: '',
+            submitHandler: function(form) {
+                var curForm = $(form);
+                if (curForm.hasClass('window-form')) {
+                    var formData = new FormData(form);
 
-                windowOpen(curForm.attr('action'), formData);
-            } else {
-                form.submit();
+                    windowOpen(curForm.attr('action'), formData);
+                } else {
+                    form.submit();
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 $(window).on('load resize', function() {
@@ -507,108 +517,145 @@ function windowOpen(linkWindow, dataWindow) {
             $('.window .window-loading').remove();
         }
 
-        $('.window form').each(function() {
-            initForm($(this));
-        });
-
-        $('.window .window-download-step1 form').each(function() {
-            var curForm = $(this);
-            var validator = curForm.validate();
-            if (validator) {
-                validator.destroy();
-            }
-            curForm.find('.form-input input').attr('autocomplete', 'off');
-            curForm.validate({
-                ignore: '',
-                submitHandler: function(form) {
-                    if (!curForm.hasClass('disabled')) {
-                        var formData = new FormData(form);
-                        curForm.addClass('loading');
-                        $.ajax({
-                            type: 'POST',
-                            url: curForm.attr('action'),
-                            processData: false,
-                            contentType: false,
-                            data: formData,
-                            dataType: 'json',
-                            cache: false,
-                            timeout: 30000
-                        }).fail(function(jqXHR, textStatus, errorThrown) {
-                            curForm.removeClass('loading');
-                            alert('Сервис временно недоступен, попробуйте позже.');
-                        }).done(function(data) {
-                            curForm.removeClass('loading');
-                            curForm.addClass('disabled');
-                            if (data.status) {
-                                reSMSperiod = data.timer + 1;
-                                window.clearTimeout(reSMSTimer);
-                                reSMSTimer = null;
-                                updateTimerSMS();
-                                $('.window-download-resend-text').show();
-                                $('.window-download-resend-text a').addClass('disabled');
-                                $('.window-download-step2').show();
-                            } else {
-                                alert(data.error);
-                            }
-                        });
-                    }
-                }
-            });
-        });
-
-        $('.window .window-download-step2 form').each(function() {
-            var curForm = $(this);
-            var validator = curForm.validate();
-            if (validator) {
-                validator.destroy();
-            }
-            curForm.find('.form-input input').attr('autocomplete', 'off');
-            curForm.validate({
-                ignore: '',
-                submitHandler: function(form) {
-                    if (!curForm.hasClass('disabled')) {
-                        var formData = new FormData(form);
-                        curForm.addClass('loading');
-                        $.ajax({
-                            type: 'POST',
-                            url: curForm.attr('action'),
-                            processData: false,
-                            contentType: false,
-                            data: formData,
-                            dataType: 'json',
-                            cache: false,
-                            timeout: 30000
-                        }).fail(function(jqXHR, textStatus, errorThrown) {
-                            curForm.removeClass('loading');
-                            alert('Сервис временно недоступен, попробуйте позже.');
-                        }).done(function(data) {
-                            curForm.removeClass('loading');
-                            if (data.status) {
-                                var params = data;
-                                $.ajax({
-                                    url: params.link,
-                                    dataType: 'binary',
-                                    xhrFields: {
-                                        'responseType': 'blob'
-                                    },
-                                    success: function(data, status, xhr) {
-                                        var blob = new Blob([data], {type: xhr.getResponseHeader('Content-Type')});
-                                        var link = document.createElement('a');
-                                        link.href = window.URL.createObjectURL(blob);
-                                        link.download = params.title;
-                                        link.click();
-                                    }
-                                });
-                            } else {
-                                alert(data.error);
-                            }
-                        });
-                    }
-                }
-            });
-        });
+        initFormWindow();
 
         $(window).trigger('resize');
+    });
+}
+
+function windowOpenHTML(html) {
+    if ($('.window').length == 0) {
+        var curPadding = $('.wrapper').width();
+        var curScroll = $(window).scrollTop();
+        $('html').addClass('window-open');
+        curPadding = $('.wrapper').width() - curPadding;
+        $('body').css({'margin-right': curPadding + 'px'});
+
+        $('body').append('<div class="window"><div class="window-loading"></div></div>')
+
+        $('.wrapper').css({'top': -curScroll});
+        $('.wrapper').data('curScroll', curScroll);
+    } else {
+        $('.window').append('<div class="window-loading"></div>')
+        $('.window-container').addClass('window-container-preload');
+    }
+
+    if ($('.window-container').length == 0) {
+        $('.window').html('<div class="window-container">' + html + '<a href="#" class="window-close"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#window-close"></use></svg></a></div>');
+    } else {
+        $('.window-container').html(html + '<a href="#" class="window-close"><svg><use xlink:href="' + pathTemplate + 'images/sprite.svg#window-close"></use></svg></a>');
+        $('.window .window-loading').remove();
+    }
+
+    $('.window form').each(function() {
+        initForm($(this));
+    });
+
+    initFormWindow();
+
+    $(window).trigger('resize');
+}
+
+function initFormWindow() {
+    $('.window form').each(function() {
+        initForm($(this));
+    });
+
+    $('.window .window-download-step1 form').each(function() {
+        var curForm = $(this);
+        var validator = curForm.validate();
+        if (validator) {
+            validator.destroy();
+        }
+        curForm.find('.form-input input').attr('autocomplete', 'off');
+        curForm.validate({
+            ignore: '',
+            submitHandler: function(form) {
+                if (!curForm.hasClass('disabled')) {
+                    var formData = new FormData(form);
+                    curForm.addClass('loading');
+                    $.ajax({
+                        type: 'POST',
+                        url: curForm.attr('action'),
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        dataType: 'json',
+                        cache: false,
+                        timeout: 30000
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        curForm.removeClass('loading');
+                        alert('Сервис временно недоступен, попробуйте позже.');
+                    }).done(function(data) {
+                        curForm.removeClass('loading');
+                        curForm.addClass('disabled');
+                        if (data.status) {
+                            reSMSperiod = data.timer + 1;
+                            window.clearTimeout(reSMSTimer);
+                            reSMSTimer = null;
+                            updateTimerSMS();
+                            $('.window-download-resend-text').show();
+                            $('.window-download-resend-text a').addClass('disabled');
+                            $('.window-download-step2').show();
+                        } else {
+                            alert(data.error);
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+    $('.window .window-download-step2 form').each(function() {
+        var curForm = $(this);
+        var validator = curForm.validate();
+        if (validator) {
+            validator.destroy();
+        }
+        curForm.find('.form-input input').attr('autocomplete', 'off');
+        curForm.validate({
+            ignore: '',
+            submitHandler: function(form) {
+                if (!curForm.hasClass('disabled')) {
+                    var formData = new FormData(form);
+                    curForm.addClass('loading');
+                    $.ajax({
+                        type: 'POST',
+                        url: curForm.attr('action'),
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        dataType: 'json',
+                        cache: false,
+                        timeout: 30000
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        curForm.removeClass('loading');
+                        alert('Сервис временно недоступен, попробуйте позже.');
+                    }).done(function(data) {
+                        curForm.removeClass('loading');
+                        if (data.status) {
+                            var params = data;
+                            $.ajax({
+                                url: params.link,
+                                dataType: 'binary',
+                                xhrFields: {
+                                    'responseType': 'blob'
+                                },
+                                success: function(data, status, xhr) {
+                                    var blob = new Blob([data], {type: xhr.getResponseHeader('Content-Type')});
+                                    var link = document.createElement('a');
+                                    link.href = window.URL.createObjectURL(blob);
+                                    link.download = params.title;
+                                    link.click();
+                                }
+                            });
+                        } else {
+                            alert(data.error);
+                        }
+                    });
+                }
+            }
+        });
     });
 }
 

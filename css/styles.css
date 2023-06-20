@@ -1901,3 +1901,5 @@ label.error {display:none !important}
     .window-photo-slider-list-item-view360-ctrl svg {display:none}
     .window-photo-slider-list-item-view360-ctrl input[type=range] {left:0; top:14px; width:300px}
 }
+
+.window-template {display:none}
